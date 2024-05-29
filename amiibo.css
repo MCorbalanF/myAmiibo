@@ -1,0 +1,97 @@
+/*#root{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 15rem );
+    justify-content: center;
+    align-items:end;
+    gap: 1rem;
+    position: relative;
+}*/
+
+html, body{
+    overflow-x: hidden;
+}
+/*amiibos*/
+.col{
+    display: flex;
+    justify-content: center;
+}
+.col .card{
+    width: 12rem ;
+    height: 200px;
+    height: max-content;
+    transition: 500ms;
+    text-decoration: none !important;
+
+}
+
+.col img{
+    object-fit:scale-down ;
+    object-position: 50% 50%;
+
+    height: 200px;
+    transition: 500ms;
+
+
+}
+
+.col:hover img{
+    transform: translateY(-1.5rem) scale(1.05);
+    height: 190px;
+    object-fit:cover;
+    object-position: 50% 10%;
+
+
+ }
+
+ .col .card-title{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 12rem;
+    text-decoration: none !important;
+
+}
+.modalimg{
+    width: 20rem;
+    object-fit: contain;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.no-info{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10
+}
+
+/*features*/
+.features-bg{
+    background-image: url(amiibo-lineup-img.avif);
+    background-position: 50% 50%;
+}
+
+/*details*/
+
+
+
+#details .card{
+    width: 95vw;
+    height: 100%;
+}
+#details .card img{
+    height: auto;
+    width: 900px;
+}
+
+#details  .card .card-title{
+    white-space: nowrap;
+    overflow: visible;
+}
