@@ -54,9 +54,9 @@ function setSortByName(){
 let filters = {
     name: "",
     type: "",
-    amiiboseries: "",
+    amiiboSeries: "",
     character: "",
-    gameSeries: "",
+    gameseries: "",
 };
 
 
@@ -201,6 +201,8 @@ function filterCharact(event){
 
     fetchAmiibo();
 }
+
+
 //-------------------------------------------------------------------------show more
 let maxDisplayItem = 35;
 let addDisplayedItems = 10;
@@ -260,14 +262,17 @@ async function fetchFilters() {
             } 
             const data = await response.json();
             
-        
+                let isRepeated = [];
                 data.amiibo.map(type=>{
-                    
+                    if(!isRepeated.includes(type.name)){
                         const element = optionTemplate.cloneNode(true)
                         element.querySelector("option").value = type.name;
                         element.querySelector("option").classList = "dropdown-item";
                         element.querySelector("option").textContent = type.name;
                         list.var.appendChild(element);
+                        isRepeated.push(type.name)
+                    }
+                        
                         
                     
                 });  
@@ -330,16 +335,16 @@ function drawAmiiboCard(object, index){
     /*fav */
 
     function changeFavIcon(){
-        let savedCollection = JSON.parse(localStorage.getItem('savedAmiibos')) || [];
+        let savedCollection = JSON.parse(localStorage.getItem('fav')) || [];
         const alreadySaved = savedCollection.some(savedAmiibo => savedAmiibo.name === amiiboList[index].name);
         if (alreadySaved) { 
-            modal.querySelector("#iconfav").innerText = "favorite";
+            card.querySelector("#iconfav").innerText = "favorite";
          }else{
-            modal.querySelector("#iconfav").innerText = "favorite_border";
+            card.querySelector("#iconfav").innerText = "favorite_border";
          }
     }
     changeFavIcon();
-    modal.querySelector("#fav").addEventListener("click", function() {
+    card.querySelector("#fav").addEventListener("click", function() {
         handleFavInput(index); 
         changeFavIcon();
     })
@@ -433,23 +438,23 @@ function refreshAmiibos(){
 /*-------------------------------------------------------------------------------fav */
     // Leer datos del localStorage o usar el JSON por defecto
     function loadLocalStorage() {
-        const amiibos = localStorage.getItem('savedAmiibos');
+        const amiibos = localStorage.getItem('fav');
         return amiibos ? myCollection = JSON.parse(amiibos) : [];
       }
 
 
     function handleFavInput(index) {
-        let savedCollection = JSON.parse(localStorage.getItem('savedAmiibos')) || [];
+        let savedCollection = JSON.parse(localStorage.getItem('fav')) || [];
         const alreadySaved = savedCollection.some(savedAmiibo => savedAmiibo.name === amiiboList[index].name);
         if (alreadySaved) {
             savedCollection = savedCollection.filter(savedAmiibo => savedAmiibo.name !== amiiboList[index].name);
-            localStorage.setItem('savedAmiibos', JSON.stringify(savedCollection));
+            localStorage.setItem('fav', JSON.stringify(savedCollection));
             loadLocalStorage();
             alertToast(`${amiiboList[index].name} erased from collection!`)
 
         }else{
             myCollection.push(amiiboList[index]);
-            localStorage.setItem('savedAmiibos', JSON.stringify(myCollection));
+            localStorage.setItem('fav', JSON.stringify(myCollection));
             loadLocalStorage();
             alertToast(`Amiibo ${amiiboList[index].name} guardado!`)
         }

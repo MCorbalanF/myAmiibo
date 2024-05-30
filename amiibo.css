@@ -95,3 +95,7 @@ html, body{
     white-space: nowrap;
     overflow: visible;
 }
+
+.min-width{
+width: min-content;
+}

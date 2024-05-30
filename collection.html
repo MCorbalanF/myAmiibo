@@ -16,18 +16,18 @@
 <body data-bs-theme-value="auto" style="padding-top: 4rem;">
     <nav class="navbar  navbar-expand-lg navbar-dark fixed-top bg-body-tertiary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.html">Amiibo App</a>
+            <a class="navbar-brand" href="index.html">My Amiibo App</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
                     aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                    <li class="nav-item">
+                    <li class="nav-item text-bg-primary">
 
-                        <h3 class="nav-link active" aria-current="page" href="#">
+                        <p class="nav-link m-0" aria-current="page" href="#">
                             My Collection
-                        </h3>
+                        </p>
                     </li>
     
                     <li class="nav-item">
@@ -41,44 +41,41 @@
                         </a>
                     </li>
                 </ul>
-                <div  class="d-flex" role="search">
-                    <input class="form-control me-2 bg-dark-subtle" id="searchname" type="text" placeholder="Search" aria-label="Search">
-                </div>
+               
             </div>
         </div>
     </nav>
-
- 
-
-
     <main class="container py-4">
         <ul class="nav nav-tabs">
             <li class="nav-item">
-              <a class="nav-link  active" aria-current="page" href="#">
-                
+              <p class="nav-link d-flex align-items-center gap-2" aria-current="page" id="fav">
+                <span class="material-symbols-outlined ">
+                    collections_bookmark
+                </span>
                    All
-                
-              </a>
+              </p>
             </li>
+            
             <li class="nav-item">
-              <a class="nav-link " href="#">
-                
-                   To Buy
-
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link " href="#">
-                
+              <p class="nav-link d-flex align-items-center gap-2" id="collection">
+                <span class="material-symbols-outlined ">
+                    collections_bookmark
+                </span>
                     My Collection
-                
-              </a>
+              </p>
             </li>
 
+            <li class="nav-item ">
+                <p class="nav-link d-flex align-items-center gap-2" id="buy">
+                    <span class="material-symbols-outlined ">
+                        local_mall
+                    </span>
+                     To Buy
+                </p>
+              </li>
         </ul>
-        <div class="border p-3">
+        <div class="border-bottom border-end border-start p-4">
             <div class="d-flex justify-content-between align-items-center mx-4 pb-4" style="height: 50px !important;">
-
                 <div class="d-flex align-items-center justify-content-center gap-2 py-4">
                     <span class="material-symbols-outlined">sort</span>
                     <button id="sortname" class="btn btn-primary rounded-pill px-3 d-flex align-items-center gap-2" type="button">
@@ -87,7 +84,10 @@
                     </button>
                 </div>
                 <div class="d-flex" id="outputsearchname">
-                    <div class="d-flex align-items-center px-4 text-body-secondary"></div>
+                    <div class="d-flex" role="search">
+                        <input class="form-control me-2 bg-dark-subtle" id="searchname" type="text" placeholder="Search"
+                            aria-label="Search">
+                    </div>
                     <button  class="btn btn-secondary d-flex align-items-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#filtercanvas" aria-controls="filtercanvas">
                         <span class="material-symbols-outlined">
                             filter_alt
@@ -132,87 +132,105 @@
             <div id="root" class="row gap-5 ">
 
             </div>  
+            <div class="container my-5 py-5 d-none" id="paginationopt">
+                <hr class="d-none" />
+                <div class="d-flex justify-content-center align-items-center ">
+                    <div class="btn btn-primary py-4 w-100 justify-content-center align-items-center" id="showMore">
+                        <span class="material-symbols-outlined">
+                            add_circle
+                        </span>
+                    </div>
+        
+                </div>
+                <div class="d-flex justify-content-between mx-4">
+                    <span></span>
+                    <div>
+                        <p></p>
+                        <select name="" id="itemperpages">
+                            <option value="20">35</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+        
+        
+                        </select>
+                        /
+                        <select name="" id="itemadded">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
         </div>
        
     </main> 
     
+    <footer class="d-flex d-flex-md flex-wrap justify-content-between align-items-center py-3 my-2 border-top">
+        <div class="col-md-4 w-md-100 mx-3 mt-2 gap-0 d-grid justify-content-start align-items-start">
+            <div class=" text-body-secondary">
+                Marc Corbalan Font
+            </div>
+            <a href="https://amiiboapi.com" class="me-2 text-body-tertiary text-decoration-none lh-1">
+
+                <p class="fs-6">
+                    Powered by: AmiiboApi
+
+                </p>
+                <sub id="lastupdate" class="text-body-info ms-2">Last Update:</sub>
+
+            </a>
+        </div>
+
+        <ul class="nav col-md-4 justify-content-end list-unstyled d-flex mx-5">
+
+            <li class="ms-3 btn btn-dark">
+                <a class="text-body-secondary d-flex justify-content-center align-items-center text-decoration-none"
+                    href="mailto:mcorbalanf@gmail.com">
+                    <span class="material-symbols-outlined">
+                        mail
+                    </span>
+                </a>
+            </li>
+
+
+        </ul>
+    </footer>
     <!--Templates-->
     <template id="card">
-        <div class="col cols-sm-12 cols-md-6 cols-lg-3 cols-xl-1">
-            <div class="card bg-dark border-secondary py-2" data-bs-toggle="modal" data-bs-target="#xxxxx">
+        <div class="col min-width cols-sm-12 cols-md-6 cols-lg-3 cols-xl-1 ">
+            <div class="card bg-dark border-secondary py-2 position-relative" >
                 <img class="img-fluid" src="xxxxxxx" alt="xxxxxxxx">
                 <div class="card-body">
                     <h4 class="card-title text-center">xxxxxxxx</h4>
                     <sub class="card-text text-body-secondary text-center">xxxxxxxxx</sub>
                 </div>
-                <div class="card-footer">
-                    <span class="material-symbols-outlined">
+                <div class="position-absolute bottom-0 end-0 d-flex">
+                    <span class="material-symbols-outlined " id="tobuy">
                         collections_bookmark
-                        </span>
-                        <span class="material-symbols-outlined">
-                            local_mall
-                            </span>
-                            <span class="material-symbols-outlined">
-                                backspace
-                                </span>
-                                <span class="material-symbols-outlined">
-                                    favorite
-                                    </span>
-
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="xxxxxxxx" tabindex="-1" aria-labelledby="xxxxxxLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    
-                  <div class="modal-header">
-                    <h1 class="modal-title " id="exampleModalLabel">xxxxxxx</h1>
-                    <div class="col p-2 amiibo-type">
-                        xxxxx
-                    </div>
+                    </span>
+                    <span class="material-symbols-outlined " id="tocollection">
+                        local_mall
+                    </span>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body d-lg-flex d-md-block m-auto ">
-                    <div class="container">
-                        <img class="img-fluid modalimg"  src="xxxxxxx" alt="xxxxxxxx">
-                    </div>
-
-                    <div class="container">
-                        <sub>Info:</sub>
-                        <div class="row border p-4 m-2">
-                            <div class="col-6">
-                                Amiibo serie:
-                            </div>
-                            <div class="col-6 text-body-secondary amiiboserie" >
-                                xxxxx
-                            </div>
-                            <div class="col-6">
-                                Game serie :
-                            </div>
-                            <div class="col-6 text-body-secondary gameserie" >
-                                xxxxx
-                            </div>
-                            <div class="col-6">
-                                Character :
-                            </div>
-                            <div class="col-6 text-body-secondary character" >
-                                xxxxx
-                            </div>
-                        </div>
-                       
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <a href="xxxxxx" class="btn btn-primary">
-                       More Details
-                    </a>
-                  </div>
+                        
                 </div>
-              </div>
+                <a class="material-symbols-outlined list-select-icon position-absolute top-0 end-0 text-decoration-none text-body-info" id="amiiboinfo" href="">
+                    info
+                </a>
+            </div>
+
+        </div>
+
             
 
         </div>
+    </template>
+    <template id="filter">
+        <option class="dropdown-menu" id="xxxxx">
+
+        </option>
     </template>
     <div id="toast" class="toast position-fixed bottom-0 end-0 m-4 align-items-center text-bg-primary border-0" role="alert" style="z-index: 9999;" autohide show aria-live="assertive" aria-atomic="true">
         <div class="d-flex">

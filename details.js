@@ -66,7 +66,7 @@ function displayAmiiboDetails(amiibo) {
     const icon = details.querySelector("#iconfav");
 
     function changeFavIcon(){
-        let savedCollection = JSON.parse(localStorage.getItem('savedAmiibos')) || [];
+        let savedCollection = JSON.parse(localStorage.getItem('fav')) || [];
         const alreadySaved = savedCollection.some(savedAmiibo => savedAmiibo.name === amiibo.name);
         icon.innerText = alreadySaved ? "favorite" : "favorite_border";
 
@@ -178,23 +178,23 @@ function displayAmiiboDetails(amiibo) {
 }
 
 function loadLocalStorage() {
-    const amiibos = localStorage.getItem('savedAmiibos');
+    const amiibos = localStorage.getItem('fav');
     return amiibos ? myCollection = JSON.parse(amiibos) : [];
   }
 
 
 function handleFavInput(amiibo) {
-    let savedCollection = JSON.parse(localStorage.getItem('savedAmiibos')) || [];
+    let savedCollection = JSON.parse(localStorage.getItem('fav')) || [];
     const alreadySaved = savedCollection.some(savedAmiibo => savedAmiibo.name === amiibo.name);
     if (alreadySaved) {
         savedCollection = savedCollection.filter(savedAmiibo => savedAmiibo.name !== amiibo.name);
-        localStorage.setItem('savedAmiibos', JSON.stringify(savedCollection));
+        localStorage.setItem('fav', JSON.stringify(savedCollection));
         loadLocalStorage();
         alertToast(`${amiibo.name} erased from collection!`)
 
     }else{
         savedCollection.push(amiibo);
-        localStorage.setItem('savedAmiibos', JSON.stringify(savedCollection));
+        localStorage.setItem('fav', JSON.stringify(savedCollection));
         loadLocalStorage();
         alertToast(`Amiibo ${amiibo.name} guardado!`)
     }
