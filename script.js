@@ -9,6 +9,185 @@ const loadingSpinner = document.getElementById('loadingSpinner');
 //global variables
 let amiiboList = [];
 let myCollection = [];
+//----------------------------------------------------------------------------------------------fetching
+async function fetchAmiibo(){
+    let url = `https://www.amiiboapi.com/api/amiibo/`
+    root.innerHTML = "";
+    loadingSpinner.classList.remove('d-none');
+    paginationOptInput.classList.add('d-none');
+
+    //ajudat per chatgpt
+        const params = [];
+        for (const key in filters) {
+            if (filters[key]) {
+                params.push(`${key}=${filters[key]}`);
+            }
+        }
+        
+        if (params.length > 0) {
+            url += '?' + params.join('&');
+        }
+    //------------------------
+    try {
+        const response =  await fetch(url);
+        if(!response.ok){
+            throw new Error("Fallo de la xarxa: " + response.statusText)
+        } 
+        const data = await response.json();
+        
+            amiiboList = data.amiibo;
+            
+            if(maxDisplayItem >= data.amiibo.length){
+                paginationOptInput.classList.add('d-none');
+
+            }else{
+                document.querySelector("#nodata").classList.remove('d-none');
+
+                paginationOptInput.classList.remove('d-none');
+
+            };
+            if(data.amiibo.length === 0 ){
+                document.querySelector("#nodata").classList.remove('d-none');
+
+            }else{
+                document.querySelector("#nodata").classList.add('d-none');
+                
+            }
+            loadingSpinner.classList.add('d-none');
+            paginationOptInput.classList.remove('d-none');
+
+    } catch(error){
+        console.error("Error: ", error)
+    }
+
+    refreshAmiibos();
+}
+
+const optionTemplate = document.querySelector("#filter").content;
+async function fetchFilters() {
+    const filterList = [
+        {
+            filter: "type",
+            var: typeList
+        },
+        {
+            filter: "gameseries",
+            var: gameseriesList
+        },
+        {
+            filter: "amiiboseries",
+            var: amiiboseriesList
+        },
+        {
+            filter: "character",
+            var: characterList
+        },
+    
+    ];
+    const url = `https://www.amiiboapi.com/api/`;
+
+    filterList.map(async list => {
+        try {
+            const response =  await fetch(`${url}/${list.filter}`);
+            if(!response.ok){
+                throw new Error("Fallo de la xarxa: " + response.statusText)
+            } 
+            const data = await response.json();
+            
+                let isRepeated = [];
+                data.amiibo.map(type=>{
+                    if(!isRepeated.includes(type.name)){
+                        const element = optionTemplate.cloneNode(true)
+                        element.querySelector("option").value = type.name;
+                        element.querySelector("option").classList = "dropdown-item";
+                        element.querySelector("option").textContent = type.name;
+                        list.var.appendChild(element);
+                        isRepeated.push(type.name)
+                    }
+                        
+                        
+                    
+                });  
+                
+
+        } catch(error){
+            console.error("Error: ", error)
+        }
+
+    })
+    
+    const updateURL = `https://www.amiiboapi.com/api/lastupdated`;
+
+    try {
+        const response =  await fetch(updateURL);
+        if(!response.ok){
+            throw new Error("Fallo de la xarxa: " + response.statusText)
+        } 
+        const data = await response.json();
+        const update = data.lastUpdated.toString();
+        document.querySelector("#lastupdate").innerText = `Last Update: ${update.substring(0, 10)}`
+
+    } catch(error){
+        console.error("Error: ", error)
+    }
+
+      
+
+}
+
+function refreshAmiibos(){
+    root.innerHTML = "";
+    const list = amiiboList.slice(0, maxDisplayItem);
+    list.map((amiibo, index) =>{
+        root.appendChild(drawAmiiboCard(amiibo, index));
+    });
+    if(maxDisplayItem  >=  amiiboList.length){
+        moreAmiibos.classList.add('d-none');
+        paginationOptInput.querySelector("hr").classList.remove('d-none');
+    }else{
+        moreAmiibos.classList.remove('d-none');
+        paginationOptInput.querySelector("hr").classList.add('d-none');
+    }
+}
+/*-----------------------------------------------------------------------------------------localstorage */
+    const tabs = [
+        "fav", "collection", "buy"
+        ];
+    let selectedTab = tabs[0];
+    
+    function loadLocalStorage() {
+        tabs.map(a =>{
+            if(localStorage.getItem(a) === null){
+                localStorage.setItem(a, JSON.stringify([]));
+           }
+        })
+    }
+    function checkLocalStorageObj( object, list ){
+        let savedCollection = JSON.parse(localStorage.getItem(list)) || [];
+        const alreadySaved = savedCollection.some(amiibo => amiibo.tail === object.tail);
+        return alreadySaved;
+    }
+    function getLocalStorageList( list ){
+        let savedCollection = JSON.parse(localStorage.getItem(list)) || [];
+        return savedCollection;
+    }
+    function handleAddListInput(object, list) {
+        let localStorageList = getLocalStorageList(list)
+        if (checkLocalStorageObj(object, list )) {
+            let index = localStorageList.findIndex(element => JSON.stringify(element) === JSON.stringify(object));
+            localStorageList.splice(index,1);
+            localStorage.setItem(list, JSON.stringify(localStorageList));
+            loadLocalStorage();
+            alertToast(`${object.name} erased from ${list}!`)
+
+        }else{
+            localStorageList.push(object);
+            localStorage.setItem(list, JSON.stringify(localStorageList));
+            loadLocalStorage();
+            alertToast(`Amiibo ${object.name} added to ${list}!`)
+        }
+    }   
+    
 //--------------------------------------------------------------------------sorting
 let sortByName;
 
@@ -21,9 +200,14 @@ function setSortByName(){
         if (a.name > b.name) return sortByName ? -1 : 1;
         return 0;
     });
+    
     amiiboList = sortedData ;
-    sortInputName.querySelector(".material-symbols-outlined").textContent = sortByName ? "north" : "south";
+    const sortIcon = sortInputName.querySelector("span");
+    sortByName ? sortIcon.textContent = "north" : sortIcon.textContent = "south";
+    sortIcon.classList.remove("d-none");
 
+
+    
     if(sortByName === undefined){
         const close = document.createElement("div");
         close.setAttribute("class", "btn p-0")
@@ -34,12 +218,14 @@ function setSortByName(){
         icon.innerText = "close";
         close.appendChild(icon);
         sortInputName.insertAdjacentElement('afterend', close);
+        sortInputName.insertAdjacentElement('afterbegin', sortIcon);
 
         close.addEventListener("click", ()=>{
             sortByName = undefined;
             sortInputName.querySelector(".material-symbols-outlined").textContent = ""
             fetchAmiibo();
             document.getElementById("close_sortbyname").remove();
+            sortIcon.classList.add("d-none");
         })
 
     }
@@ -50,7 +236,7 @@ function setSortByName(){
 }
 
 
-//--------------------------------------------------------------------------filter 
+//--------------------------------------------------------------------------------------filter 
 let filters = {
     name: "",
     type: "",
@@ -230,129 +416,53 @@ function addMoreAmiibos(){
 }
 
 /*---------------------------------------------------------------------------Draws */
-
-const optionTemplate = document.querySelector("#filter").content;
-async function fetchFilters() {
-    const filterList = [
-        {
-            filter: "type",
-            var: typeList
-        },
-        {
-            filter: "gameseries",
-            var: gameseriesList
-        },
-        {
-            filter: "amiiboseries",
-            var: amiiboseriesList
-        },
-        {
-            filter: "character",
-            var: characterList
-        },
-    
-    ];
-    const url = `https://www.amiiboapi.com/api/`;
-
-    filterList.map(async list => {
-        try {
-            const response =  await fetch(`${url}/${list.filter}`);
-            if(!response.ok){
-                throw new Error("Fallo de la xarxa: " + response.statusText)
-            } 
-            const data = await response.json();
-            
-                let isRepeated = [];
-                data.amiibo.map(type=>{
-                    if(!isRepeated.includes(type.name)){
-                        const element = optionTemplate.cloneNode(true)
-                        element.querySelector("option").value = type.name;
-                        element.querySelector("option").classList = "dropdown-item";
-                        element.querySelector("option").textContent = type.name;
-                        list.var.appendChild(element);
-                        isRepeated.push(type.name)
-                    }
-                        
-                        
-                    
-                });  
-                
-
-        } catch(error){
-            console.error("Error: ", error)
-        }
-
-    })
-    
-    const updateURL = `https://www.amiiboapi.com/api/lastupdated`;
-
-    try {
-        const response =  await fetch(updateURL);
-        if(!response.ok){
-            throw new Error("Fallo de la xarxa: " + response.statusText)
-        } 
-        const data = await response.json();
-        const update = data.lastUpdated.toString();
-        document.querySelector("#lastupdate").innerText = `Last Update: ${update.substring(0, 10)}`
-
-    } catch(error){
-        console.error("Error: ", error)
-    }
-
-      
-
-}
-
-//dibujar carta de amiibo principal
 const cardTemplate = document.querySelector("#card").content;
 function drawAmiiboCard(object, index){
     const card = cardTemplate.cloneNode(true)
     const id = object.head+object.tail;
     card.querySelector(".card").id = "card";
-
-    const click = card.querySelector(".card")
-    click.setAttribute('data-bs-target', `#${id}`);
-
+    card.querySelector("a").setAttribute("href", `details.html?id=${id}`) ;
     card.querySelector(".img-fluid").src = object.image;
+
     card.querySelector(".img-fluid").alt = object.name;
     card.querySelector(".card-title").textContent = object.name;
     card.querySelector(".card-text").textContent = object.amiiboSeries;
+    card.querySelector("#detailbtn").href = `details.html?id=${id}`;
 
-    //modal
-    const modal = card.querySelector(".modal")
-    card.querySelector(".modal").id = id;
-    modal.setAttribute("aria-labelledby", `${id}Label`)
-    modal.querySelector("#detailbtn").href = `details.html?id=${id}`;
-
-
-    modal.querySelector(".modal-title").textContent = object.name;
-    modal.querySelector(".amiibo-type").innerText = object.type;
-    modal.querySelector(".modalimg").src = object.image;
-    modal.querySelector(".modalimg").alt = object.name;
-    modal.querySelector(".gameserie").innerText = object.gameSeries;
-    modal.querySelector(".amiiboserie").innerText = object.amiiboSeries;
-    modal.querySelector(".character").innerText = object.character;
-    /*fav */
-
-    function changeFavIcon(){
-        let savedCollection = JSON.parse(localStorage.getItem('fav')) || [];
-        const alreadySaved = savedCollection.some(savedAmiibo => savedAmiibo.name === amiiboList[index].name);
-        if (alreadySaved) { 
-            card.querySelector("#iconfav").innerText = "favorite";
-         }else{
-            card.querySelector("#iconfav").innerText = "favorite_border";
-         }
+    function checkParams(list){
+        let savedCollection = JSON.parse(localStorage.getItem(list)) || [];
+        const alreadySaved = savedCollection.some(savedAmiibo => savedAmiibo.tail === object.tail);
+        return alreadySaved;
     }
-    changeFavIcon();
-    card.querySelector("#fav").addEventListener("click", function() {
-        handleFavInput(index); 
-        changeFavIcon();
-    })
+
     
+    const fav = card.querySelector("#favbutton");
+    fav.querySelector("span").classList.add("material-icons-outlined");
+    fav.querySelector("span").innerText = checkParams("fav") ? "star" : "star_border" ;
+    fav.addEventListener("click", function(){
+        handleAddListInput(object, "fav");
+        fav.querySelector("span").innerText = checkParams("fav") ? "star" : "star_border" ;
+    } )
+    
+    const colec = card.querySelector("#colecbutton");
+    colec.classList.add("material-icons");
+    colec.innerText = checkParams("collection") ? "bookmark" :  "bookmark_border" ;
+    colec.addEventListener("click", function(){
+        handleAddListInput(object, "collection");
+        colec.innerText = checkParams("collection") ? "bookmark" :  "bookmark_border" ;
+    } )
+    const buy = card.querySelector("#buybutton");
+    buy.innerText =  "sell" ;
+    checkParams("buy") ? buy.classList = "material-icons" :  buy.classList = "material-icons-outlined" ;
+
+    buy.addEventListener("click", function(){
+        handleAddListInput(object, "buy");
+        buy.classList = checkParams("buy") ? buy.classList = "material-icons" : buy.classList =  "material-icons-outlined" ;
+    } )
+
+
     return card;
 }
-
-
 
 
 
@@ -363,102 +473,7 @@ function alertToast(text){
     showToast.show();
 }
 
-//-----------------------------------------------------------------------------fetching
-async function fetchAmiibo(){
-    let url = `https://www.amiiboapi.com/api/amiibo/`
-    root.innerHTML = "";
-    loadingSpinner.classList.remove('d-none');
-    paginationOptInput.classList.add('d-none');
 
-    //ajudat per chatgpt
-        const params = [];
-        for (const key in filters) {
-            if (filters[key]) {
-                params.push(`${key}=${filters[key]}`);
-            }
-        }
-        
-        if (params.length > 0) {
-            url += '?' + params.join('&');
-        }
-    //------------------------
-    try {
-        const response =  await fetch(url);
-        if(!response.ok){
-            throw new Error("Fallo de la xarxa: " + response.statusText)
-        } 
-        const data = await response.json();
-        
-            amiiboList = data.amiibo;
-            
-            if(maxDisplayItem >= data.amiibo.length){
-                paginationOptInput.classList.add('d-none');
-
-            }else{
-                document.querySelector("#nodata").classList.remove('d-none');
-
-                paginationOptInput.classList.remove('d-none');
-
-            };
-            if(data.amiibo.length === 0 ){
-                document.querySelector("#nodata").classList.remove('d-none');
-
-            }else{
-                document.querySelector("#nodata").classList.add('d-none');
-                
-            }
-            loadingSpinner.classList.add('d-none');
-            paginationOptInput.classList.remove('d-none');
-
-    } catch(error){
-        console.error("Error: ", error)
-    }
-
-    refreshAmiibos();
-}
-
-
-
-//------------------------------------------------------------------------------render
-function refreshAmiibos(){
-    root.innerHTML = "";
-    const list = amiiboList.slice(0, maxDisplayItem);
-    list.map((amiibo, index) =>{
-        root.appendChild(drawAmiiboCard(amiibo, index));
-    });
-    if(maxDisplayItem  >=  amiiboList.length){
-        moreAmiibos.classList.add('d-none');
-        paginationOptInput.querySelector("hr").classList.remove('d-none');
-    }else{
-        moreAmiibos.classList.remove('d-none');
-        paginationOptInput.querySelector("hr").classList.add('d-none');
-    }
-
-}
-/*-------------------------------------------------------------------------------fav */
-    // Leer datos del localStorage o usar el JSON por defecto
-    function loadLocalStorage() {
-        const amiibos = localStorage.getItem('fav');
-        return amiibos ? myCollection = JSON.parse(amiibos) : [];
-      }
-
-
-    function handleFavInput(index) {
-        let savedCollection = JSON.parse(localStorage.getItem('fav')) || [];
-        const alreadySaved = savedCollection.some(savedAmiibo => savedAmiibo.name === amiiboList[index].name);
-        if (alreadySaved) {
-            savedCollection = savedCollection.filter(savedAmiibo => savedAmiibo.name !== amiiboList[index].name);
-            localStorage.setItem('fav', JSON.stringify(savedCollection));
-            loadLocalStorage();
-            alertToast(`${amiiboList[index].name} erased from collection!`)
-
-        }else{
-            myCollection.push(amiiboList[index]);
-            localStorage.setItem('fav', JSON.stringify(myCollection));
-            loadLocalStorage();
-            alertToast(`Amiibo ${amiiboList[index].name} guardado!`)
-        }
-    }   
 //--------------------------------------------------------------initializer
 
 window.onload =  initialRender ;

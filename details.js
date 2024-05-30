@@ -3,20 +3,61 @@ const root = document.querySelector('#root')
 const template = document.querySelector('#details').content;
 const details = template.cloneNode(true)
 const loadingSpinner = document.getElementById('loadingSpinner');
-
-//---------------------
 const gameList = document.querySelector('#gamelist').content;
 const useList = document.querySelector('#uselist').content;
 
-//-------------------------------------------------------------------toast
-function alertToast(text){
-    const toast = document.querySelector("#toast");
-    toast.querySelector(".toast-body").innerText = text
-    const showToast = bootstrap.Toast.getOrCreateInstance(toast);
-    showToast.show();
+
+//----------------------------------------------------------------------------------------------localstorage
+const tabs = [
+    "fav", "collection", "buy"
+    ];
+let selectedTab = tabs[0];
+
+function loadLocalStorage() {
+    tabs.map(a =>{
+        if(localStorage.getItem(a) === null){
+            localStorage.setItem(a, JSON.stringify([]));
+       }
+    })
+}
+function checkLocalStorageObj( object, list ){
+    let savedCollection = JSON.parse(localStorage.getItem(list)) || [];
+    const alreadySaved = savedCollection.some(amiibo => amiibo.tail === object.tail);
+    return alreadySaved;
+}
+function getLocalStorageList( list ){
+    let savedCollection = JSON.parse(localStorage.getItem(list)) || [];
+    return savedCollection;
 }
 
-/* fetch de dades */
+function checkLocalStorageObj( object, list ){
+    let savedCollection = JSON.parse(localStorage.getItem(list)) || [];
+    const alreadySaved = savedCollection.some(savedAmiibo => savedAmiibo.tail === object.tail);
+    return alreadySaved;
+}
+function getLocalStorageList( list ){
+    let savedCollection = JSON.parse(localStorage.getItem(list)) || [];
+    return savedCollection;
+}
+function handleAddListInput(object, list) {
+    let localStorageList = getLocalStorageList(list)
+    if (checkLocalStorageObj(object, list )) {
+        let index = localStorageList.findIndex(element => JSON.stringify(element) === JSON.stringify(object));
+        localStorageList.splice(index,1);
+        localStorage.setItem(list, JSON.stringify(localStorageList));
+        loadLocalStorage();
+        alertToast(`${object.name} erased from ${list}!`)
+
+    }else{
+        localStorageList.push(object);
+        localStorage.setItem(list, JSON.stringify(localStorageList));
+        loadLocalStorage();
+        alertToast(`Amiibo ${object.name} added to ${list}!`)
+    }
+};   
+
+
+//-----------------------------------------------------------------------------------------fetch
 async function fetchAmiiboDetails(amiiboId) {
 
     const tail = amiiboId.toString();
@@ -46,7 +87,7 @@ async function fetchAmiiboDetails(amiiboId) {
         .catch(error => console.error('Error:', error));
 }
 
-/* Draw amiibo details */
+// ---------------------------------------------------------------------------------------draw
 function displayAmiiboDetails(amiibo) {
     document.querySelector("title").innerText = ` ${amiibo.name} - ${amiibo.type} `;
     details.querySelector(".card-title").textContent = amiibo.name
@@ -63,21 +104,27 @@ function displayAmiiboDetails(amiibo) {
     details.querySelector(".releasejp").innerText = amiibo.release.jp;
     details.querySelector(".releasena").innerText = amiibo.release.na;
     /*fav */
-    const icon = details.querySelector("#iconfav");
+    const icons = details.querySelector("#iconfav");
 
-    function changeFavIcon(){
-        let savedCollection = JSON.parse(localStorage.getItem('fav')) || [];
-        const alreadySaved = savedCollection.some(savedAmiibo => savedAmiibo.name === amiibo.name);
-        icon.innerText = alreadySaved ? "favorite" : "favorite_border";
-
+    function changeIcon(list, icon){
+        icons.innerText = checkLocalStorageObj(amiibo, list) ? icon : `${icon}_border`;
     }   
-    changeFavIcon();
+ 
+    changeIcon("fav", "star");
 
     details.querySelector("#fav").addEventListener("click", function() {
-        handleFavInput(amiibo); 
-        changeFavIcon();
+        handleAddListInput(amiibo, "fav"); 
+        changeIcon("fav", "star");
     })
+    details.querySelector("#collection").addEventListener("click", function() {
+        handleAddListInput(amiibo, "collection"); 
+        alertToast(`${amiibo.name} added to my Collection!`)
+    })
+    details.querySelector("#buy").addEventListener("click", function() {
+        handleAddListInput(amiibo, "buy"); 
+        alertToast(`${amiibo.name} added to buying list!`)
 
+    })
     /*Usage */
     if(amiibo.gamesSwitch.length !== 0){
         const gameLists = gameList.cloneNode(true)
@@ -88,10 +135,14 @@ function displayAmiiboDetails(amiibo) {
             const gameUses = useList.cloneNode(true);
 
             gameUses.querySelector("li").textContent = platform.gameName;
-            const span = document.createElement("span");
-            span.setAttribute("class", "badge text-bg-primary rounded-pill");
-            span.innerText = platform.amiiboUsage.length;
-            gameUses.querySelector("li").appendChild(span);
+            if(platform.amiiboUsage.length > 1){
+                const span = document.createElement("span");
+                span.setAttribute("class", "badge text-bg-primary rounded-pill");
+                span.innerText = platform.amiiboUsage.length;
+                gameUses.querySelector("li").appendChild(span);
+
+            }
+            
             const tail = platform.gameID[0].toString();
             gameUses.querySelector("li").setAttribute("href",`#${tail.substring(8, 16)}` );
             gameUses.querySelector("li").setAttribute("aria-controls",`${tail.substring(8, 16)}` );
@@ -119,10 +170,12 @@ function displayAmiiboDetails(amiibo) {
             const gameUses = useList.cloneNode(true);
 
             gameUses.querySelector("li").textContent = platform.gameName;
-            const span = document.createElement("span");
-            span.setAttribute("class", "badge text-bg-primary rounded-pill");
-            span.innerText = platform.amiiboUsage.length;
-            gameUses.querySelector("li").appendChild(span);
+            if(platform.amiiboUsage.length > 1){
+                const span = document.createElement("span");
+                span.setAttribute("class", "badge text-bg-primary rounded-pill");
+                span.innerText = platform.amiiboUsage.length;
+                gameUses.querySelector("li").appendChild(span);
+            }
             const tail = platform.gameID[0].toString();
             gameUses.querySelector("li").setAttribute("href",`#${tail.substring(8, 16)}` );
             gameUses.querySelector("li").setAttribute("aria-controls",`${tail.substring(8, 16)}` );
@@ -150,10 +203,13 @@ function displayAmiiboDetails(amiibo) {
             const gameUses = useList.cloneNode(true);
 
             gameUses.querySelector("li").textContent = platform.gameName;
-            const span = document.createElement("span");
-            span.setAttribute("class", "badge text-bg-primary rounded-pill");
-            span.innerText = platform.amiiboUsage.length;
-            gameUses.querySelector("li").appendChild(span);
+            if(platform.amiiboUsage.length > 1){
+                const span = document.createElement("span");
+                span.setAttribute("class", "badge text-bg-primary rounded-pill");
+                span.innerText = platform.amiiboUsage.length;
+                gameUses.querySelector("li").appendChild(span);
+            }
+
             const tail = platform.gameID[0].toString();
             gameUses.querySelector("li").setAttribute("href",`#${tail.substring(8, 16)}` );
             gameUses.querySelector("li").setAttribute("aria-controls",`${tail.substring(8, 16)}` );
@@ -177,29 +233,13 @@ function displayAmiiboDetails(amiibo) {
     root.appendChild(details)
 }
 
-function loadLocalStorage() {
-    const amiibos = localStorage.getItem('fav');
-    return amiibos ? myCollection = JSON.parse(amiibos) : [];
-  }
-
-
-function handleFavInput(amiibo) {
-    let savedCollection = JSON.parse(localStorage.getItem('fav')) || [];
-    const alreadySaved = savedCollection.some(savedAmiibo => savedAmiibo.name === amiibo.name);
-    if (alreadySaved) {
-        savedCollection = savedCollection.filter(savedAmiibo => savedAmiibo.name !== amiibo.name);
-        localStorage.setItem('fav', JSON.stringify(savedCollection));
-        loadLocalStorage();
-        alertToast(`${amiibo.name} erased from collection!`)
-
-    }else{
-        savedCollection.push(amiibo);
-        localStorage.setItem('fav', JSON.stringify(savedCollection));
-        loadLocalStorage();
-        alertToast(`Amiibo ${amiibo.name} guardado!`)
-    }
-}   
-
+function alertToast(text){
+    const toast = document.querySelector("#toast");
+    toast.querySelector(".toast-body").innerText = text
+    const showToast = bootstrap.Toast.getOrCreateInstance(toast);
+    showToast.show();
+}
+//---------------------------------------------------------------------------------initializer
 window.onload =  initialRender ;
 function initialRender(){
     if (window.location.pathname.endsWith('details.html')) {
