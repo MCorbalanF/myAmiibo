@@ -116,3 +116,8 @@ width: min-content;
     cursor: pointer;
     user-select: none;
 }
+
+.nav-item, .nav-link{
+    user-select: none;
+    cursor: pointer;
+}

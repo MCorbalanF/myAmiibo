@@ -47,45 +47,7 @@
             </div>
         </div>
     </nav>
-    <div class="d-flex">
-        <button class="btn btn-dark d-flex align-items-center ms-auto me-4" type="button" data-bs-toggle="collapse"
-            data-bs-target="#features" aria-expanded="false" aria-controls="features">
-            <span class="material-symbols-outlined">
-                visibility
-            </span>
-        </button>
-    </div>
-    <div class="container pb-0 mb-0 collapse show" id="features">
-        <div class="row row-cols-1 row-cols-md-2 align-items-md-center g-5 py-0">
-            <div class="col d-flex flex-column align-items-start gap-2">
-                <h2 class="fw-bold text-body-emphasis">"Explora todos los Amiibos: Descubre, Colecciona y Juega"</h2>
-                <p class="text-body-secondary">Sumérgete en el mundo de los amiibos y descubre todas sus funciones en
-                    juegos, explora sus detalles y crea tu lista de favoritos.</p>
-            </div>
-            <div class="col">
-                <div class="row row-cols-1 row-cols-sm-2 g-4">
-                    <div class="col d-flex flex-column gap-2">
 
-                        <h4 class="fw-semibold mb-0 text-body-emphasis">"Haz una Lista de Amiibos por Adquirir"</h4>
-                        <p class="text-body-secondary"> No pierdas de vista los amiibos que deseas tener. Crea una lista
-                            de deseos para mantener un registro de aquellos que te faltan por añadir a tu colección.
-                        </p>
-                    </div>
-
-                    <div class="col d-flex flex-column gap-2">
-
-                        <h4 class="fw-semibold mb-0 text-body-emphasis">"Descubre Amiibos"</h4>
-                        <p class="text-body-secondary">Descubre cómo los amiibos pueden desbloquear contenido adicional,
-                            proporcionar bonificaciones especiales y mejorar tu experiencia de juego en una variedad de
-                            títulos.</p>
-                    </div>
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
     <div class="d-flex justify-content-between align-items-center mx-4" style="height: 50px !important;">
 
         <div class="d-flex align-items-center justify-content-center gap-2 py-4">
@@ -95,6 +57,7 @@
                 <span class="material-symbols-outlined d-none"> </span>
                 Name
             </button>
+
         </div>
         <div class="d-flex" id="outputsearchname">
             <div class="d-flex align-items-center px-4 text-body-secondary"></div>
@@ -152,6 +115,20 @@
                 </div>
 
             </div>
+            <div class="d-flex align-items-center justify-content-between py-2 gap-1">
+                Hide Favorite List
+                <input type="checkbox" id="hidefavinput" />
+            </div>
+            <div class="d-flex align-items-center justify-content-between py-2 gap-1">
+                Hide collection
+                <input type="checkbox" id="hidecolecinput"  />
+            </div>
+            <div class="d-flex align-items-center justify-content-between py-2 gap-1">
+                Hide Buy List
+                <input type="checkbox" id="hidebuyinput" />
+            </div>
+
+            
         </div>
     </div>
 

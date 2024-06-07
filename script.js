@@ -8,6 +8,7 @@ const loadingSpinner = document.getElementById('loadingSpinner');
 
 //global variables
 let amiiboList = [];
+let showAmiiboList = [];
 let myCollection = [];
 //----------------------------------------------------------------------------------------------fetching
 async function fetchAmiibo(){
@@ -36,7 +37,7 @@ async function fetchAmiibo(){
         const data = await response.json();
         
             amiiboList = data.amiibo;
-            
+            showAmiiboList = [...amiiboList];
             if(maxDisplayItem >= data.amiibo.length){
                 paginationOptInput.classList.add('d-none');
 
@@ -139,7 +140,7 @@ function refreshAmiibos(){
     root.innerHTML = "";
     const list = amiiboList.slice(0, maxDisplayItem);
     list.map((amiibo, index) =>{
-        root.appendChild(drawAmiiboCard(amiibo, index));
+        root.appendChild(drawAmiiboCard(amiibo));
     });
     if(maxDisplayItem  >=  amiiboList.length){
         moreAmiibos.classList.add('d-none');
@@ -249,39 +250,53 @@ let filters = {
 // filter list element
 const inputType = document.getElementsByTagName("type");
 const searchByNameInput = document.getElementById("searchname");
-
-const typeList = document.querySelector("#searchtype");
-const gameseriesList = document.getElementById("searchgameseries");
-const amiiboseriesList = document.getElementById("searchamiiboseries");
-const characterList = document.getElementById("searchcharacter");
-const outputSearchName = document.getElementById("outputsearchname")
-
+const outputSearchName = document.getElementById("outputsearchname");
 searchByNameInput.addEventListener('input', filterName);
 function filterName(event){
     filters.name = event.target.value;
     outputSearchName.querySelector("div").innerText = event.target.value;
     fetchAmiibo();
-}
+};
 
-const addEraseDataButton = (toggle, dom) => {
 
-    const close = document.createElement("button");
-    close.setAttribute("type", "button");
-    close.setAttribute("class", "btn-close");
-    close.setAttribute("aria-label", "Close");
-    close.setAttribute("id", `close_${dom.id}`);
-    close.addEventListener("click", ()=>{
-        toggle = undefined;
-        dom.value = "";
-        filters.type = "";
-        document.querySelector(`#close_${dom.id}`).remove();
-        fetchAmiibo();
-    })
+const hidefavInput = document.getElementById("hidefavinput");
+hidefavInput.addEventListener('click',filterHideFav)
+function filterHideFav(){
+    checkManualFilter();
+    refreshAmiibos();
+};
 
-    dom.insertAdjacentElement('afterend', close);
-    
-}
+const hideCollectionInput = document.getElementById("hidecolecinput");
+hideCollectionInput.addEventListener('click',filterHideCollection)
+function filterHideCollection(){
+    checkManualFilter();
+    refreshAmiibos();
+};
 
+const hideBuyInput = document.getElementById("hidebuyinput");
+hideBuyInput.addEventListener('click',filterHideBuy)
+function filterHideBuy(){
+    checkManualFilter();
+    refreshAmiibos();
+};
+
+function checkManualFilter(){
+    const favlist = getLocalStorageList("fav").map(item => item.tail);
+    const collectionlist = getLocalStorageList("collection").map(item => item.tail);
+    const buylist = getLocalStorageList("buy").map(item => item.tail);
+    amiiboList = [...showAmiiboList];
+
+    if (hidefavInput.checked) {
+        amiiboList = amiiboList.filter(item => !favlist.includes(item.tail));
+    }
+    if (hideCollectionInput.checked) {
+        amiiboList = amiiboList.filter(item => !collectionlist.includes(item.tail));
+    }
+    if (hideBuyInput.checked) {
+        amiiboList = amiiboList.filter(item => !buylist.includes(item.tail));
+    }
+};
+const typeList = document.querySelector("#searchtype");
 let filterByType ;
 typeList.addEventListener('input', filterType);
 function filterType(event){
@@ -306,8 +321,10 @@ function filterType(event){
     }
     filterByType = !filterByType;
     fetchAmiibo();
-}
+};
 
+
+const gameseriesList = document.getElementById("searchgameseries");
 let filterByGameseries;
 gameseriesList.addEventListener('input', filterGameSeries);
 function filterGameSeries(event){
@@ -333,8 +350,10 @@ function filterGameSeries(event){
     filterByGameseries = !filterByGameseries;
 
     fetchAmiibo();
-}
+};
 
+
+const amiiboseriesList = document.getElementById("searchamiiboseries");
 let filterByamiiboseries
 amiiboseriesList.addEventListener('input', filterAmiiboSeries);
 function filterAmiiboSeries(event){
@@ -362,6 +381,8 @@ function filterAmiiboSeries(event){
     fetchAmiibo();
 }
 
+
+const characterList = document.getElementById("searchcharacter");
 let filterByCharacter;
 characterList.addEventListener('input', filterCharact);
 function filterCharact(event){
@@ -417,7 +438,8 @@ function addMoreAmiibos(){
 
 /*---------------------------------------------------------------------------Draws */
 const cardTemplate = document.querySelector("#card").content;
-function drawAmiiboCard(object, index){
+function drawAmiiboCard(object){
+    //draw card
     const card = cardTemplate.cloneNode(true)
     const id = object.head+object.tail;
     card.querySelector(".card").id = "card";
@@ -435,7 +457,7 @@ function drawAmiiboCard(object, index){
         return alreadySaved;
     }
 
-    
+    //fav
     const fav = card.querySelector("#favbutton");
     fav.querySelector("span").classList.add("material-icons-outlined");
     fav.querySelector("span").innerText = checkParams("fav") ? "star" : "star_border" ;
@@ -444,6 +466,8 @@ function drawAmiiboCard(object, index){
         fav.querySelector("span").innerText = checkParams("fav") ? "star" : "star_border" ;
     } )
     
+
+    //subactions
     const colec = card.querySelector("#colecbutton");
     colec.classList.add("material-icons");
     colec.innerText = checkParams("collection") ? "bookmark" :  "bookmark_border" ;
@@ -453,11 +477,10 @@ function drawAmiiboCard(object, index){
     } )
     const buy = card.querySelector("#buybutton");
     buy.innerText =  "sell" ;
-    checkParams("buy") ? buy.classList = "material-icons" :  buy.classList = "material-icons-outlined" ;
-
+    buy.classList = checkParams("buy") ? buy.classList = "material-icons" : buy.classList =  "material-symbols-outlined" ;
     buy.addEventListener("click", function(){
         handleAddListInput(object, "buy");
-        buy.classList = checkParams("buy") ? buy.classList = "material-icons" : buy.classList =  "material-icons-outlined" ;
+        buy.classList = checkParams("buy") ? buy.classList = "material-icons" : buy.classList =  "material-symbols-outlined" ;
     } )
 
 

@@ -349,79 +349,47 @@ function drawAmiiboCard(object) {
     card.querySelector(".img-fluid").alt = object.name;
     card.querySelector(".card-title").textContent = object.name;
     card.querySelector(".card-text").textContent = object.amiiboSeries;
-    function checkParams(list) {
+ 
+
+    function checkParams(list){
         let savedCollection = JSON.parse(localStorage.getItem(list)) || [];
         const alreadySaved = savedCollection.some(savedAmiibo => savedAmiibo.tail === object.tail);
         return alreadySaved;
     }
 
-    /*
-    const btn = card.querySelector("#actionbtn");
 
-
-    //handleEraseListInput();
-
-    if (selectedTab !== tabs[0]) {
-        if (selectedTab === tabs[1]) {
-            btn.remove();
-        }
-        if (selectedTab === tabs[2]) {
-            btn.querySelector("span").classList.add("material-icons");
-            btn.querySelector("span").innerText = "collections_bookmark";
-            btn.addEventListener("click", function () {
-                handleAddListInput(object, "collection");
-                handleEraseListInput(object, "buy");
-                refreshAmiibos();
-            })
-        }
-
-
-    } else {
-        btn.querySelector("span").classList.add("material-icons");
-        btn.querySelector("span").innerText = checkParams("collection") ? "bookmark" : "bookmark_border";
-        btn.addEventListener("click", function () {
-            handleAddListInput(object, "collection");
-            btn.querySelector("span").innerText = checkParams("collection") ? "bookmark" : "bookmark_border";
-        })
-
-    }
-
-*/
-
-function checkParams(list){
-    let savedCollection = JSON.parse(localStorage.getItem(list)) || [];
-    const alreadySaved = savedCollection.some(savedAmiibo => savedAmiibo.tail === object.tail);
-    return alreadySaved;
-}
-
-
-const fav = card.querySelector("#favbutton");
-if(checkLocalStorageObj(object, "fav")){
-    fav.querySelector("span").classList.add("material-icons-outlined");
-    fav.querySelector("span").innerText = checkParams("fav") ? "star" : "star_border" ;
-    fav.addEventListener("click", function(){
+    const fav = card.querySelector("#favbutton");
+    const favErase = card.querySelector(".modal");
+    favErase.querySelector(".modal-footer .btn-primary").addEventListener("click", function(){
         handleAddListInput(object, "fav");
         fav.querySelector("span").innerText = checkParams("fav") ? "star" : "star_border" ;
     } )
-}else{
-    fav.remove();
-}
 
+    if(checkLocalStorageObj(object, "fav")){
+        fav.querySelector("span").classList.add("material-icons-outlined");
+        fav.querySelector("span").innerText = checkParams("fav") ? "star" : "star_border" ;
+    
+    }else{
+        fav.remove();
+    }
 
-const colec = card.querySelector("#colecbutton");
-colec.classList.add("material-icons");
-colec.innerText = checkParams("collection") ? "bookmark" :  "bookmark_border" ;
-colec.addEventListener("click", function(){
+    const colec = card.querySelector("#colecbutton");
+    colec.classList.add("material-icons");
+    colec.innerText = checkParams("collection") ? "bookmark" :  "bookmark_border" ;
+    colec.addEventListener("click", function(){
     handleAddListInput(object, "collection");
     colec.innerText = checkParams("collection") ? "bookmark" :  "bookmark_border" ;
 } )
+
+
+//----buy
 const buy = card.querySelector("#buybutton");
 buy.innerText =  "sell" ;
-checkParams("buy") ? buy.classList = "material-icons" :  buy.classList = "material-icons-outlined" ;
+checkParams("buy") ? buy.classList = "material-icons" :  buy.classList = "material-symbols-outlined" ;
 
 buy.addEventListener("click", function(){
     handleAddListInput(object, "buy");
-    buy.classList = checkParams("buy") ? buy.classList = "material-icons" : buy.classList =  "material-icons-outlined" ;
+    buy.classList = checkParams("buy") ? buy.classList = "material-icons" : buy.classList =  "material-symbols-outlined" ;
 } )
 
 

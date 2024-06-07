@@ -213,7 +213,7 @@
                     <sub class="card-text text-body-secondary text-center">xxxxxxxxx</sub>
                 </a>
                 <div class="d-flex align-items-center justify-content-center position-absolute top-0 start-0 ">
-                    <button id="favbutton"
+                    <button id="favbutton"  data-bs-toggle="modal" data-bs-target="#exampleModal"
                         class="btn btn-dark p-1 d-flex align-items-center justify-content-center rounded-circle">
                         <span class="material-icons">star</span>
                     </button>
@@ -240,6 +240,31 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">
+                    
+                        Are you sure?
+                        
+                    </h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+    
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                  <button class="btn btn-primary">Yes</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+    </template>
+    <template id="filter">
+        <option class="dropdown-menu" id="xxxxx">
+
+        </option>
     </template>
     <template id="filter">
         <option class="dropdown-menu" id="xxxxx">
