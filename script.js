@@ -3,9 +3,6 @@
 const root = document.getElementById("root");
 const loadingSpinner = document.getElementById('loadingSpinner');
 
-/*bootstrap modals */
-
-
 //global variables
 let amiiboList = [];
 let showAmiiboList = [];
