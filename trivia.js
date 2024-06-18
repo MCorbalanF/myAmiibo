@@ -26,7 +26,7 @@ const QUESTIONS = [
         img:true,
         answerType:"character",
         type:"Nombre",
-
+        check:"character"
     },
     {
         answers:4,
@@ -34,6 +34,8 @@ const QUESTIONS = [
         img:false,
         answerType:"gameSeries",
         type:"Nombre",
+        check:"gameSeries"
+
     },
     {
         answers:4,
@@ -41,6 +43,8 @@ const QUESTIONS = [
         img:false,
         answerType:"character",
         type:"Nombre",
+        check:"gameSeries"
+        
     },
     {
         answers:4,
@@ -48,6 +52,8 @@ const QUESTIONS = [
         img:true,
         answerType:"character",
         type:"Nombre",
+        check:"character"
+
     },
     {
         answers:4,
@@ -55,6 +61,8 @@ const QUESTIONS = [
         img:true,
         answerType:"gameSeries",
         type:"Series",
+        check:"gameSeries"
+
     },
     {
         answers:4,
@@ -62,6 +70,8 @@ const QUESTIONS = [
         img:false,
         answerType:"image",
         type:"image",
+        check:"image"
+
     },
     {
         answers:4,
@@ -69,6 +79,8 @@ const QUESTIONS = [
         img:false,
         answerType:"image",
         type:"image",
+        check:"gameSeries"
+
     },
 ];
 const nameForm = form.querySelector("#username")
@@ -99,6 +111,7 @@ let currentQuestionIndex = 0;
 function gameStarter(){
     form.classList.add("d-none");
     POINTS = 0;
+    currentQuestionIndex = 0
     getNextQuestion();
 }
 
@@ -135,19 +148,19 @@ function getRandomQuestion() {
     const randomIndex = Math.floor(Math.random() * QUESTIONS.length);
     return QUESTIONS[randomIndex];
 }
-function getRandomAnswer(type) {
-    const correctAnswer = CORRECT_ANSWER[type];
+function getRandomAnswer(displayType, checkType) {
+    const correctCheckAnswer = CORRECT_ANSWER[checkType];
     let randomAmiibo;
 
     // Loop to ensure a different amiibo is selected
     while (true) {
         randomAmiibo = getRandomAmiibo();
-        if (randomAmiibo !== CORRECT_ANSWER && randomAmiibo[type] !== correctAnswer) {
+        if (randomAmiibo !== CORRECT_ANSWER && randomAmiibo[checkType] !== correctCheckAnswer) {
             break;
         }
     }
 
-    return randomAmiibo[type];
+    return randomAmiibo[displayType];
 }
 //------------------------------------------------misc functions
 function startTimer() {
@@ -228,10 +241,10 @@ function drawQuestion(newquestion, correct){
 
                 const buttonImage = document.createElement("img");
                 buttonImage.classList.add("button-image");
-                buttonImage.src = getRandomAnswer(newquestion.answerType);
+                buttonImage.src = getRandomAnswer(newquestion.answerType, newquestion.check);
                 answr.querySelector("button").appendChild(buttonImage)
             }else{
-                answr.querySelector("button").textContent = getRandomAnswer(newquestion.answerType);
+                answr.querySelector("button").textContent = getRandomAnswer(newquestion.answerType, newquestion.check);
             }
             answr.querySelector("button").id = "not-correct";
 
