@@ -26,7 +26,7 @@ const QUESTIONS = [
         img:true,
         answerType:"character",
         type:"Nombre",
-        check:""
+
     },
     {
         answers:4,
@@ -283,6 +283,7 @@ function drawFinish(){
 //----------------------------------VALIDATION ANSWER
 function validateSelectedAnswer(id){
     let point = 0;
+    const timeoutSeconds = TIMEOUT_TIME / 1000;
     if(id === CORRECT_ANSWER){
         conffeti();
         document.querySelector("#correct").classList.add("btn-success");
@@ -294,8 +295,23 @@ function validateSelectedAnswer(id){
             elemento.classList.add("animation-not-selected-erroranswer");
         });
         
-        point = point > 1500 ? Math.floor(TIMEOUT_TIME / 1000) * 100 : 75
+       // Calcular puntos en función del tiempo transcurrido
+       if (timeoutSeconds <= 1) {
+        point = 75 * 2;
+    } else if (timeoutSeconds <= 2) {
+        point = 75 * 1.75;
+    } else if (timeoutSeconds <= 3) {
+        point = 75 * 1.5;
+    } else if (timeoutSeconds <= 4) {
+        point = 75 * 1.25;
+    } else {
+        point = 75;
+    }
 
+    // Puntos adicionales si POINTS es mayor a 1500
+    if (POINTS > 1500) {
+        point += Math.floor(TIMEOUT_TIME / 1000) * 75;
+    }
     }else{
         document.querySelector("#correct").classList.add("btn-success");
         document.querySelector("#correct").classList.add("selected-correct-answer");
@@ -310,10 +326,6 @@ function validateSelectedAnswer(id){
 
     }
     POINTS += point;
-
-    console.log(point)
-    console.log(POINTS)
-
 };
 
 //---------------------------------------fetching the amiibo
