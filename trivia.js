@@ -284,8 +284,7 @@ function drawFinish(){
 
 
     finish.querySelector("button").addEventListener("click", ()=>{
-        finish.remove();
-
+        root.innerHTML = "";
         form.classList.remove("d-none");
     })
 
