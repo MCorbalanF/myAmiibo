@@ -103,6 +103,7 @@ function gameStarter(){
 }
 
 function getNextQuestion(){
+    scrollToTop();
     clearInterval(questionInterval);
     questionInterval = 0
     root.innerHTML = "";
@@ -117,7 +118,13 @@ function getNextQuestion(){
     }
   
 }
-
+function scrollToTop(){
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // Hace que el desplazamiento sea suave
+    });
+    
+}
 
 //----------------------------------------------randomness and limits
 function getRandomAmiibo() {
@@ -276,7 +283,11 @@ function drawFinish(){
     })
 
 
-    
+    finish.querySelector("button").addEventListener("click", ()=>{
+        finish.remove();
+
+        form.classList.remove("d-none");
+    })
 
     root.appendChild(finish)
 }
