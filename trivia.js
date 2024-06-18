@@ -10,8 +10,8 @@ let amiiboList = [];
 //selected Options
 let NAME = "";
 let POINTS = 0;
-let TIME_LIMIT = 10000
-let QUESTION_LIST = 10;
+let TIME_LIMIT = 8000
+let QUESTION_LIST = 15;
 let CORRECT_ANSWER = {};
 let CURRENT_Q = {};
 let TIMEOUT = false;
