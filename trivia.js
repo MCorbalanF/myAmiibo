@@ -6,8 +6,6 @@ const finishCard = document.querySelector("#finish").content;
 const form = document.getElementById('form');
 
 let amiiboList = [];
-
-//selected Options
 let NAME = "";
 let POINTS = 0;
 let TIME_LIMIT = 8000
@@ -18,6 +16,8 @@ let TIMEOUT = false;
 let CHECK_ANSWER = false;
 let TIMEOUT_TIME = 0;
 let questionInterval;
+let INCORRECT_ANSWERS = [];
+let currentQuestionIndex = 0;
 
 const QUESTIONS = [
     {
@@ -70,7 +70,7 @@ const QUESTIONS = [
         img:false,
         answerType:"image",
         type:"image",
-        check:"image"
+        check:"character"
 
     },
     {
@@ -83,19 +83,21 @@ const QUESTIONS = [
 
     },
 ];
+
+//-------------------------------------------------------------------------form
 const nameForm = form.querySelector("#username")
 nameForm.value = NAME;
 nameForm.addEventListener('input',(event)=>{
     NAME = event.target.value;
 }
 );
+/*
 const dificultyForm = form.querySelector("#difficulty")
 nameForm.addEventListener('input',(event)=>{
     DIFFICULTY = event.target.value;
 }
 );
-
-
+*/
 const startButton = form.querySelector("button");
 startButton.addEventListener("click", ()=>{
     if(NAME.length < 1 || amiiboList.length < 1){
@@ -106,16 +108,17 @@ startButton.addEventListener("click", ()=>{
 
 })
 
-let currentQuestionIndex = 0;
-//start the game
+//-------------------------------------
 function gameStarter(){
     form.classList.add("d-none");
+    document.querySelector(".h-trivia").classList.add("d-none");
     POINTS = 0;
     currentQuestionIndex = 0
     getNextQuestion();
 }
 
 function getNextQuestion(){
+    INCORRECT_ANSWERS = [] ;
     scrollToTop();
     clearInterval(questionInterval);
     questionInterval = 0
@@ -152,10 +155,15 @@ function getRandomAnswer(displayType, checkType) {
     const correctCheckAnswer = CORRECT_ANSWER[checkType];
     let randomAmiibo;
 
-    // Loop to ensure a different amiibo is selected
     while (true) {
         randomAmiibo = getRandomAmiibo();
-        if (randomAmiibo !== CORRECT_ANSWER && randomAmiibo[checkType] !== correctCheckAnswer) {
+
+        if (
+            randomAmiibo !== CORRECT_ANSWER && 
+            randomAmiibo[checkType] !== correctCheckAnswer && 
+            !INCORRECT_ANSWERS.includes(randomAmiibo[checkType])
+        ) {
+            INCORRECT_ANSWERS.push(randomAmiibo[checkType]);
             break;
         }
     }
@@ -168,7 +176,7 @@ function startTimer() {
     const progressBar = document.getElementById("timer");
     let remainingTime = limit;
     progressBar.style.width = '100%';
-    progressBar.textContent = `${Math.ceil(limit / 1000)}s`;
+    //progressBar.textContent = `${Math.ceil(limit / 1000)}s`;
     TIMEOUT_TIME = limit;
     questionInterval = setInterval( async () => {
         remainingTime -= 10; // actualizar cada 100ms
@@ -176,7 +184,7 @@ function startTimer() {
         const percentage = Math.max(0, (remainingTime / limit) * 100);
         const secondsRemaining = Math.ceil(remainingTime / 1000);
         progressBar.style.width = percentage + '%';
-        progressBar.textContent = `${secondsRemaining}s`;
+        //progressBar.textContent = `${secondsRemaining}s`;
 
         if (remainingTime <= 0) {
             clearInterval(questionInterval);
@@ -195,12 +203,11 @@ function waitOneSecond() {
         resolve(); // Resuelve la promesa después de 1 segundo
       }, 4000); // 1000 milisegundos = 1 segundo
     });
-  }
-
-  function cleanString(str) {
+}
+function cleanString(str) {
     return str.replace(/\s-\s.*$/, '');
 }
-//--------------------------------------------------------------display Question
+//------------------------------------------------display Question
 
 function drawQuestion(newquestion, correct){
     const newQ = question.cloneNode(true)
@@ -226,7 +233,6 @@ function drawQuestion(newquestion, correct){
                 answr.querySelector("button").textContent = ""
                 const buttonImage = document.createElement("img");
                 buttonImage.classList.add("button-image");
-
                 buttonImage.src = correct[newquestion.answerType];
                 answr.querySelector("button").appendChild(buttonImage)
             }else{
@@ -299,6 +305,8 @@ function drawFinish(){
     finish.querySelector("button").addEventListener("click", ()=>{
         root.innerHTML = "";
         form.classList.remove("d-none");
+        document.querySelector(".h-trivia").classList.remove("d-none");
+
     })
 
     root.appendChild(finish)
@@ -307,6 +315,7 @@ function drawFinish(){
 function validateSelectedAnswer(id){
     let point = 0;
     const timeoutSeconds = TIMEOUT_TIME / 1000;
+    const limitSeconds = TIME_LIMIT / 1000
     if(id === CORRECT_ANSWER){
         conffeti();
         document.querySelector("#correct").classList.add("btn-success");
@@ -318,23 +327,19 @@ function validateSelectedAnswer(id){
             elemento.classList.add("animation-not-selected-erroranswer");
         });
         
-       // Calcular puntos en función del tiempo transcurrido
-       if (timeoutSeconds <= 1) {
-        point = 75 * 2;
-    } else if (timeoutSeconds <= 2) {
-        point = 75 * 1.75;
-    } else if (timeoutSeconds <= 3) {
-        point = 75 * 1.5;
-    } else if (timeoutSeconds <= 4) {
-        point = 75 * 1.25;
-    } else {
-        point = 75;
-    }
+        const timePercentage = (timeoutSeconds / limitSeconds) * 100;
 
-    // Puntos adicionales si POINTS es mayor a 1500
-    if (POINTS > 1500) {
-        point += Math.floor(TIMEOUT_TIME / 1000) * 75;
-    }
+        if (timePercentage <= 50) {
+            point = 75 * 1; 
+        } else if (timePercentage <= 75) {
+            point = 75 * 1.5;
+        } else if (timePercentage <= 100) {
+            point = 75 * 2; 
+        } else {
+            point = 75; 
+        }
+
+
     }else{
         document.querySelector("#correct").classList.add("btn-success");
         document.querySelector("#correct").classList.add("selected-correct-answer");
@@ -352,7 +357,6 @@ function validateSelectedAnswer(id){
 };
 
 //---------------------------------------fetching the amiibo
-
 async function fetchAmiibo(){
     let url = `https://www.amiiboapi.com/api/amiibo/?type=figure&showusage`
    
@@ -376,7 +380,6 @@ async function fetchAmiibo(){
 
 }
 
-
 function alertToast(text){
     const toast = document.querySelector("#toast");
     toast.querySelector(".toast-body").innerText = text
@@ -395,8 +398,8 @@ async function initialRender(){
 // confetti
 //https://github.com/catdad/canvas-confetti
 
-var count = 200;
-var defaults = {
+let count = 200;
+let defaults = {
   origin: { y: 0.7 }
 };
 
@@ -459,5 +462,5 @@ let localScoreBoard = [];
         localStorageList.push(object);
         localStorage.setItem(localScore, JSON.stringify(localStorageList));
         loadLocalStorage();
-        alertToast(`Amiibo ${object.name} added to ${localScore}!`)
+        alertToast(`Score added to ${localScore}!`)
     }   
