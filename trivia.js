@@ -291,7 +291,7 @@ function drawFinish() {
     finish.querySelector("#score").textContent = POINTS;
     const tbody = finish.querySelector("#tbody")
     const sortedAmiibos = localScoreBoard.sort((a, b) => b.score - a.score);
-    sortedAmiibos.map((data, index) => {
+    sortedAmiibos.slice(0, 15).map((data, index) => {
         const row = document.createElement("tr");
         const number = document.createElement("td")
         number.textContent = index + 1
