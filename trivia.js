@@ -22,7 +22,7 @@ let currentQuestionIndex = 0;
 const QUESTIONS = [
     {
         answers: 4,
-        title: function () { return "Que nombre es el del personaje de este amiibo?" },
+        title: function () { return "What is this amiibo character's name?" } ,
         img: true,
         answerType: "character",
         type: "Nombre",
@@ -30,7 +30,7 @@ const QUESTIONS = [
     },
     {
         answers: 4,
-        title: function () { return `A que serie pertenece ${CORRECT_ANSWER.character}` },
+        title: function () { return `Which game series does ${CORRECT_ANSWER.character} belong to?` },
         img: false,
         answerType: "gameSeries",
         type: "Nombre",
@@ -39,7 +39,7 @@ const QUESTIONS = [
     },
     {
         answers: 4,
-        title: function () { return `Que personaje pertenece a la serie ${CORRECT_ANSWER.gameSeries}` },
+        title: function () { return `Which character belongs to the ${CORRECT_ANSWER.gameSeries} series?` },
         img: false,
         answerType: "character",
         type: "Nombre",
@@ -48,7 +48,7 @@ const QUESTIONS = [
     },
     {
         answers: 4,
-        title: function () { return "Que nombre es el del personaje de este amiibo?" },
+        title: function () { return "What is this amiibo character's name?" },
         img: true,
         answerType: "character",
         type: "Nombre",
@@ -57,7 +57,7 @@ const QUESTIONS = [
     },
     {
         answers: 4,
-        title: function () { return `A que serie pertenece este amiibo` },
+        title: function () { return ` Which game series does this amiibo belong to?` },
         img: true,
         answerType: "gameSeries",
         type: "Series",
@@ -66,7 +66,7 @@ const QUESTIONS = [
     },
     {
         answers: 4,
-        title: function () { return `Que amiibo pertenece a ${CORRECT_ANSWER.name}` },
+        title: function () { return `Which of these amiibo figures is ${CORRECT_ANSWER.name} 's?` },
         img: false,
         answerType: "image",
         type: "image",
@@ -75,7 +75,7 @@ const QUESTIONS = [
     },
     {
         answers: 4,
-        title: function () { return `Que amiibo pertenece a ${CORRECT_ANSWER.gameSeries}` },
+        title: function () { return `Which amiibo figure belongs to the ${CORRECT_ANSWER.gameSeries} game series?` },
         img: false,
         answerType: "image",
         type: "image",
