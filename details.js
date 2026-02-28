@@ -61,7 +61,7 @@ function handleAddListInput(object, list) {
 async function fetchAmiiboDetails(amiiboId) {
 
     const tail = amiiboId.toString();
-    const url = `https://www.amiiboapi.com/api/amiibo/?tail=${tail.substring(8, 16)}&showusage`; 
+    const url = `https://amiiboapi.org/api/amiibo/?tail=${tail.substring(8, 16)}&showusage`; 
     root.innerHTML = "";
     loadingSpinner.classList.remove('d-none');
    
