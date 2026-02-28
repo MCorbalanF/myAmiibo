@@ -9,7 +9,7 @@ let showAmiiboList = [];
 let myCollection = [];
 //----------------------------------------------------------------------------------------------fetching
 async function fetchAmiibo(){
-    let url = `https://www.amiiboapi.com/api/amiibo/`
+    let url = `https://amiiboapi.org/api/amiibo/`
     root.innerHTML = "";
     loadingSpinner.classList.remove('d-none');
     paginationOptInput.classList.add('d-none');
@@ -82,7 +82,7 @@ async function fetchFilters() {
         },
     
     ];
-    const url = `https://www.amiiboapi.com/api/`;
+    const url = `https://amiiboapi.org/api/`;
 
     filterList.map(async list => {
         try {
@@ -114,7 +114,7 @@ async function fetchFilters() {
 
     })
     
-    const updateURL = `https://www.amiiboapi.com/api/lastupdated`;
+    const updateURL = `https://amiiboapi.org/api/lastupdated`;
 
     try {
         const response =  await fetch(updateURL);
