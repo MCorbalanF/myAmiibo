@@ -401,7 +401,7 @@ function incrementScore(DOMelement, score, duration) {
 
 //---------------------------------------fetching the amiibo
 async function fetchAmiibo() {
-    let url = `https://www.amiiboapi.com/api/amiibo/?type=figure&showusage`
+    let url = `https://amiiboapi.org/api/amiibo/?type=figure&showusage`
 
     loadingSpinner.classList.remove('d-none');
 
